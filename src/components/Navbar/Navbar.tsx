@@ -1,12 +1,15 @@
 "use client";
-import { AppBar, Box, Container, FormControl, IconButton, Menu, MenuItem, Toolbar, Typography } from "@mui/material";
+import { AppBar, Avatar, Box, Container, FormControl, IconButton, Input, InputAdornment, Menu, MenuItem, TextField, Toolbar, Tooltip, Typography } from "@mui/material";
 // import { useRouter } from "next/router";
 import { useRouter } from "next/navigation";
 
 import React from "react";
 import Image from "next/image";
 import MenuIcon from "@mui/icons-material/Menu";
+import SearchIcon from "@mui/icons-material/Search";
+import ClearIcon from "@mui/icons-material/Clear";
 import Link from "next/link";
+import { IoCloseCircleOutline } from "react-icons/io5";
 
 const pages = [
     "Home",
@@ -50,9 +53,16 @@ const Navbar = () => {
     }
 
     return (
-       <AppBar>
-            <Container>
-                <Toolbar>
+       <AppBar
+       position="sticky"
+       sx={{
+        backgroundColor: "rgba(0, 0, 0, 0.65)",
+        top: 0,
+        transition: "background-color 0.3s ease-in-out",
+        "&:hover": { backgroundColor: "#000",  opacity: 1 },
+       }}>
+            <Container maxWidth="xl">
+                <Toolbar disableGutters>
                   <Image
                     src={"/assets/logo.png"}
                     alt="Logo"
@@ -60,7 +70,7 @@ const Navbar = () => {
                     height={50}
                     style={{ position: "relative", zIndex: 1 }}
                   />  
-                  <Box>
+                  <Box sx={{flexGrow: 1, display: {xs: "flex", md:"none" }}}>
                     <IconButton>
                         <MenuIcon />
                     </IconButton>
@@ -75,14 +85,106 @@ const Navbar = () => {
                         {pages.map((page) => (
                             <MenuItem key={page}>
                                 <Typography>
-                                    <Link href={page === "Home" ? "/" : page === "My List" ? "/my_list" : '#' } />
+                                    <Link  href={page === "Home" ? "/" : page === "My List" ? "/my_list" : '#' } >
+                                    <Box sx={{
+                                        opacity: 0.9,
+                                        cursor: "pointer",
+                                        padding: ".6rem 0.9rem",
+                                        "&:hover":{
+                                            borderColor: "#fff"
+                                        }
+                                    }}>{page}</Box>
+                                    </Link>
                                 </Typography>
                             </MenuItem>
                         ))}
                     </Menu>
                   </Box>
-                  <FormControl></FormControl>
-                  <Box></Box>
+                  {/* Navigation links for small screens */}
+                  <Box sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}>
+                      {pages.map((page) => (
+                          <Link key={page} href={page === "Home" ? "/" : page === "My List" ? "/my_list" : '#'}>
+                              <Box sx={{
+                                  opacity: 0.9,
+                                  cursor: "pointer",
+                                  padding: ".6rem 0.9rem",
+                                  "&:hover": {
+                                      borderColor: "#fff",
+                                      fontWeight: 500,
+                                  }
+                              }}>{page}</Box>
+                          </Link>
+                      ))}
+                  </Box>
+                  {/* Navigation links for medium and up screens */}
+                  <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
+                      {pages.map((page) => (
+                          <Link key={page} href={page === "Home" ? "/" : page === "My List" ? "/my_list" : '#'}>
+                              <Box sx={{
+                                  opacity: 0.9,
+                                  cursor: "pointer",
+                                  padding: ".6rem 0.9rem",
+                                  "&:hover": {
+                                      borderColor: "#fff",
+                                      fontWeight: 500,
+                                  }
+                              }}>{page}</Box>
+                          </Link>
+                      ))}
+                  </Box>
+                  <FormControl sx={{ marginRight: "10px", backgroundColor:"#2a2a2a99"}}>
+                    <TextField
+                    size="small"
+                    variant="outlined"
+                    placeholder="Search"
+                    value={searchQuery}
+                    onChange={handleChange}
+                    onKeyPress={handleSearchKeyPress}
+                    inputProps={{
+                        startAdornment:(
+                            <InputAdornment position="start">
+                                <SearchIcon sx={{
+                                    color: "#ffffff80"
+                                }} />
+                            </InputAdornment>
+                        ),
+                        endAdornment: showClearIcons && (
+                            <InputAdornment position="end"
+                            style={{ display: showClearIcons ? "block" : "none" }}
+                            onClick={handleClick}>
+                               <ClearIcon sx={{color: "#ffffff80", cursor: "pointer"}} />
+                            </InputAdornment>
+                        ),
+                        style:{color: "#ffffff80", width: "300px", backgroundColor: "#2a2a2a99"}
+                    }}
+                    sx={{
+                        "& .MuiOutlinedInput-root": {
+                            "& fieldset": {
+                                borderColor: "#ffffff80",
+                            },
+                            "&:hover fieldset": {
+                                borderColor: "#ffffff80",
+                            },
+                            "&.Mui-focused fieldset": {
+                                borderColor: "#ffffff80",
+                            },
+                        },
+                        "& .MuiInputBase-input": {
+                            color: "#ffffff80",
+                        },
+                    }}
+                    >
+                      
+                    </TextField>
+                  </FormControl>
+                  <Box sx={{flexGrow: 0,
+                  }}>
+                    <Tooltip title="Open Settings">
+                        <IconButton>
+                            <Avatar alt="User Avatar" src="/assets/avatar.png" sx={{ borderRadius: "5px", width:40, height:40 }}/>
+                        </IconButton>
+                    </Tooltip>
+                  </Box>
                   <Box></Box>
                 </Toolbar>
             </Container>

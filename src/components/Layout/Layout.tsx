@@ -14,7 +14,9 @@ const Layout: React.FC<ChildrenProvider> = ({children}) => {
                 {/* Main content area */}
             {children}
             </Box>
-            <Footer />
+            <Box sx={{ flex: '0 0 auto' }}>
+                <Footer />
+            </Box>
         </Box>
     );
 }

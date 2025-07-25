@@ -1,11 +1,38 @@
 import Image from "next/image";
+import react from "react";
 
-export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-       Hello new netflix clone!
-      </main>
-     </div>
-  );
-}
+
+const page = () => {};
+
+
+const sections: MovieSectionProps[] =[
+
+  { heading: "Top Rated",
+    endpoint: "/movie/top_rated?language=en-US&page=1",
+  },
+
+  {
+    heading: "Trending Now",
+    endpoint: "/trending/all/day?language=en-US&page=1",
+  },
+  
+  { heading: "Action Movies",
+    endpoint: "/discover/movie?with_genres=28&language=en-US&page=1",
+  },
+  { heading: "Comedy Movies",
+    endpoint: "/discover/movie?with_genres=35&language=en-US&page=1",
+  },
+  { heading: "Horror Movies",
+    endpoint: "/discover/movie?with_genres=27&language=en-US&page=1",
+  },
+  { heading: "Romance Movies",
+    endpoint: "/discover/movie?with_genres=10749&language=en-US&page=1",
+  },
+  { heading: "Documentaries",
+    endpoint: "/discover/movie?with_genres=99&language=en-US&page=1",
+  },
+];
+
+export default page;
+
+
