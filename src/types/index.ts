@@ -5,6 +5,7 @@ import { IconType } from "react-icons";
 
 
 export interface SliderButtonProps {
+    isRight?: boolean;
 }
 
 export interface ButtonProps {

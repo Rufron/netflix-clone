@@ -1,7 +1,6 @@
 import { Axios, AxiosRequestConfig } from "axios";
 import getInstance from "./axio";
 import { ApiResponse, AxiosErrorType, MovieResponse } from "../types";
-import { Sorts_Mill_Goudy } from "next/font/google";
 
 
 const getRequest = async <T>(
@@ -42,7 +41,7 @@ export const getMovie = async (
     const config: AxiosRequestConfig = {
         params: {
             api_key: process.env.NEXT_PUBLIC_TMDB_API_KEY,
-            Sort_by: Sorts_Mill_Goudy,
+            sort_by: "popularity.desc",
             page: 1,
         }
     }

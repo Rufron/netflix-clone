@@ -1,10 +1,15 @@
+"use client";
+import Banner from "@/components/Banner/Banner";
+import MovieSections from "@/components/MovieSections/MovieSections";
+import { Box, CircularProgress } from "@mui/material";
 import Image from "next/image";
-import react from "react";
+import react, { useState } from "react";
 
 
-const page = () => {};
+const Home = () => {
+  const [loading, setLoading] = useState<boolean>(false);
 
-
+  
 const sections: MovieSectionProps[] =[
 
   { heading: "Top Rated",
@@ -33,6 +38,32 @@ const sections: MovieSectionProps[] =[
   },
 ];
 
-export default page;
+  return (
+    <>
+    {loading && (
+    <Box sx={{position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)",zIndex: 1}}>
+      <CircularProgress size={60} sx={{color: "red"}}/>
+    </Box>
+    )}
+    <Banner />
+    <Box sx={{ marginTop: "9rem", display: "flex", flexDirection: "column", backgroundColor: "#141414", color: "white", position: "relative", minHeight: "100vh"}}>
+      <Box sx={{ marginLeft: ".8rem", zIndex: 0 }}>
+        {sections.map((section, index) => (
+          <Box  sx={{ marginBottom: "2rem" }}>
+            <h2></h2>
+            {/* Here you would typically map over the movies fetched from the endpoint */}
+            <MovieSections key={index} heading={section.heading} endpoint={section.endpoint} loading={loading} setLoading={setLoading}/>
+          </Box>
+        ))}
+
+      </Box>
+    </Box>
+    </>
+  );
+};
+
+
+
+export default Home;
 
 

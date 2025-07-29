@@ -5,6 +5,7 @@ import { GoMute as Mute, GoUnmute as Unmute } from "react-icons/go";
 import { MdNoAdultContent as Adult, MdHd as HD, MdClose as Close } from "react-icons/md";
 import { TbRating12Plus as Rating } from "react-icons/tb";
 import { FaFacebook as FB, FaInstagram as Instagram, FaYoutube as Youtube } from "react-icons/fa";
+import { MdNavigateBefore as Previous, MdNavigateNext as Next } from "react-icons/md";
 
 
 export {
@@ -29,5 +30,8 @@ export {
     Rating,
     FB,
     Instagram,
-    Youtube
+    Youtube,
+    Previous,
+    Next,
+    
 }
