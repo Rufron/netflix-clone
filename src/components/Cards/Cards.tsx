@@ -1,70 +1,122 @@
-import { CardProps, Genre } from '@/types';
+import { CardProps, Genre, MediaItem, Video } from '@/types';
 import { Box, Typography } from '@mui/material';
 import React, { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import ReactPlayer from 'react-player';
 import Button from '../Button/Button';
 import Image from 'next/image';
-import { isItemInLocalStorage } from '@/utils/localStorage';
+import handleAddToLocalStorage, { handleRemoveFromLocalStorage, isItemInLocalStorage } from '@/utils/localStorage';
+import { getMovie } from '@/utils/apiService';
 
 const Cards: React.FC<CardProps> = ({ item, enableGenres, removeMovie }) => {
     const [genres, setGenres] = React.useState<Genre[]>([]);
-    const [error, setError] = React.useState<string | null>(null);
     const [trailerKey, setTrailerKey] = React.useState<string | null>(null);
-
-    const [isMute, setIsMute] = React.useState<boolean>(true);
     const [isHovered, setIsHovered] = React.useState<boolean>(false);
     const [isMounted, setIsMounted] = React.useState<boolean>(false);
-    const [modalOpen, setModalOpen] = React.useState<boolean>(false);
     const [isInLocalStorage, setIsInLocalStorage] = React.useState<boolean>(false);
 
-    const handleOpen = () => setModalOpen(true);
-    const handleClose = () => setModalOpen(false);
-
     const router = useRouter();
-    const { id, poster_path, title, vote_average, genre_ids, backdrop_path} = item;
-   
+    const { id, poster_path, title, vote_average } = item;
+
     useEffect(() => {
         setIsMounted(true);
         setIsInLocalStorage(
-           isItemInLocalStorage(id, item.title)    
+            isItemInLocalStorage(item.id, item.title)
         );
         if (enableGenres) {
-            setGenres(item.genres || []);
+            setGenres(item.genre || []);
         }
     }, [item, enableGenres]);
 
-    const handlePlayClick = () => {
-        if (item?.id && isMounted) {
-            router.push(`/movie/${item.id}`);
+    const fetchTrailer = async () => {
+        try {
+            const res = await getMovie(`/movie/${item.id}/videos`);
+            if (!res.error) {
+                const trailer = (res.data?.results as unknown[] as Video[]).find(
+                    (video: Video) => video.type === item.type
+                );
+                setTrailerKey(trailer?.key || null);
+            }
+        } catch (error) {
+            console.error("Trailer fetch error:", error);
         }
+    };
 
-    // const fileURLToPath = (path: string) => {
-    //     return `https://image.tmdb.org/t/p/w500${path}`;
-    // };
+    useEffect(() => {
+        if (isHovered) {
+            fetchTrailer();
+        }
+    }, [isHovered]);
+
+    const handleFavoriteToggle = () => {
+        const mediaItem: MediaItem = {
+            id,
+            title,
+            type: item.type as any, // Assume type is already correct, or adjust as needed
+        };
+
+        if (isInLocalStorage) {
+            handleRemoveFromLocalStorage(mediaItem);
+            setIsInLocalStorage(false);
+            removeMovie?.(mediaItem.id);
+        } else {
+            handleAddToLocalStorage(mediaItem);
+            setIsInLocalStorage(true);
+        }
+    };
 
     return (
-        <Box>
+        <Box
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}
+            sx={{ position: 'relative', width: 300 }}
+        >
             {isHovered && trailerKey ? (
                 <Box>
-                    <ReactPlayer />
+                    <ReactPlayer
+                        url={trailerKey ? `https://www.youtube.com/watch?v=${trailerKey}` : undefined}
+                        playing
+                        muted
+                        width="100%"
+                        height="100%"
+                    />
                     <Box>
                         <Button />
                     </Box>
                 </Box>
             ) : (
-                
-                    <Image/>
-                
+                poster_path ? (
+                    <Image
+                        src={`https://image.tmdb.org/t/p/w500${poster_path}`}
+                        alt={title}
+                        width={300}
+                        height={450}
+                        style={{ objectFit: 'cover', width: '100%', height: 'auto' }}
+                    />
+                ) : null
             )}
-
             <Box>
+                <Typography>{title}</Typography>
                 <Box>
-                    <Typography>{title}</Typography>
+                    <Button />
+                    <Button />
+                    <Button />
                 </Box>
+                <Typography>
+                    {genres.slice(0, 5).map((genre, index) => (
+                        <span key={genre.id}>
+                            {genre.name}
+                            {index < Math.min(genres.length, 5) - 1 && <span>&bull;</span>}
+                        </span>
+                    ))}
+                </Typography>
             </Box>
         </Box>
     );
 }
 
 export default Cards;
+
+// function fetchTrailer() {
+//     throw new Error('Function not implemented.');
+// }

@@ -3,7 +3,7 @@ import { useEffect } from 'react';
 
 const handleAddToLocalStorage = (item: MediaItem) => {
     const existingItems: MediaItem[] = JSON.parse( 
-    localStorage.getItem("favouriteItems") : []
+    localStorage.getItem("favouriteItems") , []
     )
 
     const IsAlreadyInList = existingItems.some(

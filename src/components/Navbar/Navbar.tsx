@@ -84,7 +84,7 @@ const Navbar = () => {
                         >
                         {pages.map((page) => (
                             <MenuItem key={page}>
-                                <Typography>
+                                <Typography component="span">
                                     <Link  href={page === "Home" ? "/" : page === "My List" ? "/my_list" : '#' } >
                                     <Box sx={{
                                         opacity: 0.9,
@@ -140,7 +140,7 @@ const Navbar = () => {
                     value={searchQuery}
                     onChange={handleChange}
                     onKeyPress={handleSearchKeyPress}
-                    inputProps={{
+                    InputProps={{
                         startAdornment:(
                             <InputAdornment position="start">
                                 <SearchIcon sx={{

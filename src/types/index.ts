@@ -22,12 +22,14 @@ export interface CardProps {
     removeMovie?: (id: number) => void;
     item: Media;
     MediaType?: string;
-    enableDenres?: boolean;
+    enableGenres?: boolean;
+    
 }
 
 export enum MediaType{
     Movie = "movie",
     TV = "tv",
+    
 }
 
 export interface Genre {
@@ -65,8 +67,14 @@ export interface Video {
 
 export interface MediaItem {
     id: number;
-    type: "movie" | "tv";
+    // type: "movie" | "tv";
     title: string;
+    type: MediaType; 
+    genres?: Genre[]; 
+    genre_ids?: number[]; 
+    vote_average: number;
+    poster_path?: string;
+    backdrop_path?: string;
 }
 
 export interface AxiosErrorType {

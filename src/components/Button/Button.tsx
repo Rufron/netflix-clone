@@ -1,8 +1,7 @@
 import { Box, ButtonProps } from '@mui/material';
 import React from 'react';
 
-const Button: React.FC<ButtonProps> = ({props}) => {
-    const { filled, label, Icon, rounded, onClick, hidden } = props;
+const Button: React.FC<any> = ({ filled, label, Icon, rounded, onClick, hidden }) => {
     const backgroundColor = filled ? 'blue' : 'transparent';
     const color = filled ? 'white' : 'black';
     const borderRadius = rounded ? '50%' : '4px';
