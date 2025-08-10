@@ -10,7 +10,7 @@ import handleAddToLocalStorage, { handleRemoveFromLocalStorage, isItemInLocalSto
 import { getMovie } from '@/utils/apiService';
 import { Mute, Unmute, Add, Down, Like, Play, Tick } from '@/utils/icons';
 import image from 'next/image';
-import ModalComponent from '../ModalComponent/ModalComponent';
+import ModalComponent from '../Modal/Modal';
 
 const Cards: React.FC<CardProps> = ({ item, enableGenres, removeMovie }) => {
     const [genres, setGenres] = React.useState<Genre[]>([]);
