@@ -10,6 +10,7 @@ import { Button } from '../Button/Button';
 import {Link } from 'next/link';
 import RenderGenre from '../RenderGenre/RenderGenre';
 import { GenreLibrary } from '@/utils/genre_id';
+import SimilarMedia from '../SimilarMedia/SimilarMedia';
 
 const ModalComponent: React.FC<ModalProps> = ({
     modalOpen,
@@ -191,13 +192,32 @@ const ModalComponent: React.FC<ModalProps> = ({
                                 border: "2px solid #e5e5e5",
                                 color: "#e5e5e5",
                             }}>12+</Typography>
-                            <Typography>120m</Typography>
-                            <HD />
+                            <Typography
+                            sx={{fontSize: "10px",
+                                color: "#e5e5e5e5",
+                                fontWeight: "bold",
+                            }}>120m</Typography>
+                            <HD 
+                            style={{
+                                fontSize: "20px",
+                                color: "#e5e5e5",
+                            }}/>
                         </Box>
-                        <Box>
-                            <Typography>Genres:</Typography>
+                        <Box
+                        sx={{
+                            display: "flex",
+                            flexDirection: "row",
+                        }}>
+                            <Typography
+                            sx={{fontSize: "10px",
+                                mr: 1,
+                                color: "#e5e5e5",
+                            }}>Genres:</Typography>
                             {enableGenres ? (
-                                <Typography>{genres?.slice(0, 5).map(({name}, index)=>(
+                                <Typography
+                                sx={{fontSize: "15px",
+                                    color: "#e5e5e5",
+                                }}>{genres?.slice(0, 5).map(({name}, index)=>(
                                     <span key={index}>
                                         {name}
                                         {index < genres.length - 1 && <span> &bull;</span>}
@@ -210,8 +230,16 @@ const ModalComponent: React.FC<ModalProps> = ({
                         </Box>
                     </Box>
 
-                    <Typography>{overview}</Typography>
-                    <Typography>more movies like this</Typography>
+                    <Typography
+                    id="modal-modal-description"
+                    sx={{my: 2, color: "#ffffff80"}}>{overview}</Typography>
+                    <Typography
+                    sx={{
+                        fontWeight: "bold",
+                        color: "#e5e5e5",
+                        fontSize: "1.3rem",
+                    }}>more movies like this</Typography>
+                    <SimilarMedia id={id} />
                 </Box>
             </Box>
         </Modal>
