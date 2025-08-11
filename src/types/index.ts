@@ -23,7 +23,6 @@ export interface CardProps {
     item: Media;
     MediaType?: string;
     enableGenres?: boolean;
-    
 }
 
 export enum MediaType{
@@ -40,7 +39,7 @@ export interface Genre {
 export interface Media {
     id: number;
     adult: boolean;
-    genre_ids: number[];
+    genre_ids?: number[];
     original_language: string;
     original_title: string;
     popularity: number;
@@ -107,7 +106,8 @@ export interface MovieResponse {
 }
 
 export interface RenderGenreProps {
-    genreIds: number[];
+    // genreIds: number[];
+    genre_ids?: number[];
 }
 
 export interface ChildrenProvider {

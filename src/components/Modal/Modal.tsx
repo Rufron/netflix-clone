@@ -6,7 +6,7 @@ import handleAddToLocalStorage,{  handleRemoveFromLocalStorage, isItemInLocalSto
 import { MediaItem , Video, ModalProps} from '@/types';
 import { Image } from '@mui/icons-material';
 import {Add, Adult, Dislike, HD, Like, Mute, Play, Search, Unmute, Close} from '@/utils/icons';
-import { Button } from '../Button/Button';
+import  Button  from '../Button/Button';
 import {Link } from 'next/link';
 import RenderGenre from '../RenderGenre/RenderGenre';
 import { GenreLibrary } from '@/utils/genre_id';
@@ -34,6 +34,8 @@ const ModalComponent: React.FC<ModalProps> = ({
         runtime,
         title,
         vote_average,
+        adult,
+        genre_ids
     } = modelData || {};
 
     const banner = `https://image.tmdb.org/t/p/original${backdrop_path}`;

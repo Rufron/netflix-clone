@@ -61,4 +61,6 @@ return (
     </Card>
 )
 }
+
+export default SimilarMediaCard
    

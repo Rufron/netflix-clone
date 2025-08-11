@@ -1,4 +1,4 @@
-import { CardProps, Genre, MediaItem, Video } from '@/types';
+import { CardProps,Media, Genre, MediaItem, Video } from '@/types';
 import { Box, Typography } from '@mui/material';
 import React, { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
@@ -21,7 +21,10 @@ const Cards: React.FC<CardProps> = ({ item, enableGenres, removeMovie }) => {
     const [isMuted, setIsMuted] = React.useState<boolean>(true);
 
     const router = useRouter();
-    const { genre_ids,id, poster_path, title, vote_average } = item;
+    const {id, poster_path, title, vote_average, genre_ids} = item;
+    // const genre_ids = Array.isArray(item.genre_ids) ? item.genre_ids : [];
+    
+
     const image = `https://image.tmdb.org/t/p/w500${poster_path}`;
     useEffect(() => {
         setIsInLocalStorage(
@@ -219,7 +222,7 @@ const Cards: React.FC<CardProps> = ({ item, enableGenres, removeMovie }) => {
                         ))}
                     </Typography>
                     ) : (
-                        <RenderGenre genreIds={[genre_ids]} />
+                        <RenderGenre genreIds={genre_ids || []} />
                     )
                     }
                 </Box>
