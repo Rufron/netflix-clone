@@ -1,4 +1,5 @@
 "use client";
+
 import Banner from "@/components/Banner/Banner";
 import MovieSections from "@/components/MovieSections/MovieSections";
 import { Box, CircularProgress } from "@mui/material";

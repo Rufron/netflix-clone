@@ -47,3 +47,32 @@ export const getMovie = async (
     }
     return await getRequest<MovieResponse>(endpoint, config);
 }
+
+
+// (Optional) POST request example -> could be your "setMovies"
+export const setMovies = async (
+  endpoint: string,
+  payload: any
+): Promise<ApiResponse<any>> => {
+  const axiosInstance = getInstance();
+
+  try {
+    const response = await axiosInstance.post(endpoint, payload, {
+      params: {
+        api_key: process.env.NEXT_PUBLIC_TMDB_API_KEY,
+      },
+    });
+    return { data: response.data, error: undefined };
+  } catch (err) {
+    const error = err as AxiosErrorType;
+    return {
+      data: undefined,
+      error: {
+        message: `Failed to send data to ${endpoint}`,
+        status: error.response?.status,
+        details: error.response?.data,
+        name: error.name || "AxiosError",
+      },
+    };
+  }
+};
