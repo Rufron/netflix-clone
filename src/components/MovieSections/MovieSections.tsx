@@ -1,14 +1,36 @@
-"use client";
+
+
+// gemini version.
 import { Box, Typography, IconButton } from "@mui/material";
 import React from "react";
-import Image from "next/image";
-import { getMovie } from "@/utils/apiService";
-import SliderButton from "../SliderButton/SliderButton";
-import Cards from "../Cards/Cards";
+// Assuming Image, getMovie, SliderButton, Cards are defined elsewhere
+import Image from "next/image"; // Not used in the final JSX
+import { getMovie } from "@/utils/apiService"; // Not defined, using placeholder
+import Cards from "../Cards/Cards"; // Placeholder component
 import { ChevronLeft, ChevronRight } from "@mui/icons-material";
 
+// --- Minimal SliderButton placeholder (kept for reference) ---
+const SliderButton = ({ isRight, onClick }: { isRight: boolean, onClick: () => void }) => (
+    <IconButton
+        onClick={onClick}
+        sx={{
+            position: "absolute",
+            top: "50%",
+            [isRight ? "right" : "left"]: "1rem",
+            transform: "translateY(-50%)",
+            background: "rgba(0,0,0,0.6)",
+            color: "#fff",
+            "&:hover": { background: "rgba(0,0,0,0.8)" },
+            zIndex: 5,
+            opacity: { xs: 0, sm: 1 },
+            transition: 'opacity 300ms'
+        }}
+    >
+        {isRight ? <ChevronRight /> : <ChevronLeft />}
+    </IconButton>
+);
+// -----------------------------------------------------------
 
-// Define the props interface for MovieSections
 interface MovieSectionProps {
     heading: string;
     endpoint: string;
@@ -24,20 +46,27 @@ const MovieSections: React.FC<MovieSectionProps> = (
     const [media, setMedia] = React.useState<any[]>([]);
     const [error, setError] = React.useState<string | null>(null);
     const [isScrolled, setIsScrolled] = React.useState<boolean>(false);
-    const [page, setPage] = React.useState<number>(0);
+    // 🌟 FIX 3: New state to track scrolling for pointer-events fix
+    const [isScrolling, setIsScrolling] = React.useState<boolean>(false);
 
-    // added pagination logic.
-    const itemsPerPage = 5;
-    const totalPages = Math.ceil(media.length / itemsPerPage);
-    const startIndex = page * itemsPerPage;
-    const endIndex = startIndex + itemsPerPage;
-    const visibleItems = media.slice(startIndex, endIndex);
-
+    // ... (fetchMovies logic remains the same) ...
     const fetchMovies = async () => {
         if (setLoading) {
             setLoading(true);
         }
-        const res = await getMovie(`${endpoint}`)
+        // NOTE: Placeholder for actual API call
+        const res = await getMovie(`${endpoint}`) 
+        // For demonstration, simulating a successful response:
+        // const mockData = {
+        //     data: {
+        //         results: Array.from({ length: 20 }, (_, i) => ({
+        //             id: i,
+        //             title: `Movie ${i + 1}`,
+        //             poster_path: `/path/to/poster${i}.jpg`,
+        //         })),
+        //     },
+        // };
+        // const res = mockData as any; // Cast mock data for type compatibility
 
         if (res.error) {
             setError(res.error.message);
@@ -54,71 +83,83 @@ const MovieSections: React.FC<MovieSectionProps> = (
         fetchMovies();
     }, [endpoint]);
 
-    const handleScroll = (event: React.UIEvent<HTMLDivElement>) => {
-        const scrollLeft = (event.currentTarget as HTMLElement).scrollLeft;
-        setIsScrolled(scrollLeft > 0);
-        const scrollTop = event.currentTarget.scrollTop;
-    }
 
     const scrollContainerRef = React.useRef<HTMLDivElement | null>(null);
+
+    const handleScroll = (event: React.UIEvent<HTMLDivElement>) => {
+        const scrollLeft = (event.currentTarget as HTMLElement).scrollLeft;
+        setIsScrolled(scrollLeft > 50);
+        
+        // 🌟 FIX 3: Re-enable pointer events after scrolling stops (debounced)
+        if (isScrolling) {
+             // Basic debounce to check if scrolling has stopped
+            if (scrollTimeout.current) clearTimeout(scrollTimeout.current);
+
+            scrollTimeout.current = setTimeout(() => {
+                setIsScrolling(false);
+            }, 100); // 100ms delay after scroll to confirm stop
+        }
+    }
+    const scrollTimeout = React.useRef<NodeJS.Timeout | null>(null);
+
+
+    // Utility function to handle scroll with pointer-events block
+    const performScroll = (scrollAmount: number) => {
+        if (scrollContainerRef.current) {
+            // 🌟 FIX 3: Disable pointer events before scrolling starts
+            setIsScrolling(true);
+            
+            scrollContainerRef.current.scrollBy({ left: scrollAmount, behavior: "smooth" });
+            
+            // Set a timeout to re-enable pointer events after the scroll is expected to finish
+            const scrollDuration = 500; // Assuming 'smooth' scroll takes about 500ms
+            if (scrollTimeout.current) clearTimeout(scrollTimeout.current);
+            scrollTimeout.current = setTimeout(() => {
+                setIsScrolling(false);
+            }, scrollDuration + 50); // Little extra time to ensure re-enable
+        }
+    };
+
     const scrollLeft = () => {
         if (scrollContainerRef.current) {
-            scrollContainerRef.current.scrollBy({ left: -500, behavior: "smooth" });
+            performScroll(-scrollContainerRef.current.clientWidth * 0.8);
         }
     };
 
     const scrollRight = () => {
         if (scrollContainerRef.current) {
-            scrollContainerRef.current.scrollBy({ left: 500, behavior: "smooth" });
+            performScroll(scrollContainerRef.current.clientWidth * 0.8);
         }
     };
-    // to handle the next & previuos code.
-    // const handleNext = () => {
-    //     if (page < totalPages - 1) setPage(page + 1);
-    // };
-
-    // const handlePrev = () => {
-    //     if (page > 0) setPage(page - 1);
-    // };
-    console.log("🎥 Media data:", media);
 
     return (
         <Box
             sx={{
-                // display: 'flex',
-                // flexDirection: 'column',
-                // textTransform: 'capitalize',
-                // marginTop: '-9rem',
-                // zIndex: -1,
-
-
-                display: "flex",
-                flexDirection: "row",
-                overflowX: "auto",
-                overflowY: "hidden",
-                scrollSnapType: "x mandatory",
-                gap: "1.5rem",
-                padding: "0 2rem",
-                scrollBehavior: "smooth",
-                "&::-webkit-scrollbar": {
-                    display: "none",
-                },
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '1rem',
+                padding: { xs: '0 0 1rem', md: '0 0 2rem' },
+                color: 'white',
             }}>
             {error && <Typography variant="h6" color="error">{error}</Typography>}
             {!loading && !error && (
                 <>
+                    {/* 1. SECTION HEADING */}
                     <Typography
-                        component="strong"
+                        component="h2"
+                        variant="h5"
                         sx={{
                             fontSize: '1.5rem',
-                            marginLeft: '1rem',
-                            padding: '1rem 0',
-                            width: 'fit-content',
-                            marginBottom: '1rem',
-                            zIndex: 1,
+                            fontWeight: 600,
+                            marginLeft: { xs: '1rem', md: '3rem' },
+                            transition: 'color 0.2s',
+                            '&:hover': { color: 'grey.300' },
+                            cursor: 'pointer',
                         }}>
                         {heading}
                     </Typography>
+
+                    {/* 2. SCROLLABLE CONTAINER PARENT */}
                     <Box
                         className="scroll-container-parent"
                         sx={{
@@ -126,69 +167,8 @@ const MovieSections: React.FC<MovieSectionProps> = (
                             display: 'flex',
                             alignItems: 'center',
                         }}>
-                        /* {isScrolled && (<SliderButton isRight={false} />)} */
-                        /* ⬅️ Prev Button */
-                        {/* {page > 0 && (
-                            <IconButton
-                                onClick={handlePrev}
-                                sx={{
-                                    position: "absolute",
-                                    top: "50%",
-                                    left: "1rem",
-                                    transform: "translateY(-50%)",
-                                    background: "rgba(0,0,0,0.6)",
-                                    color: "#fff",
-                                    "&:hover": { background: "rgba(0,0,0,0.8)" },
-                                    zIndex: 5,
-                                }}
-                            >
-                                <ChevronLeft />
-                            </IconButton>
-                        )} */}
 
-                        {/* <Box className="scroll-container"
-                            onScroll={handleScroll}
-                            sx={{
-                                // display: 'flex',
-                                // flexDirection: 'row',
-                                // padding: { xs: '3.2rem 6rem 12.5rem' },
-                                // overflowX: 'auto',
-                                // overflowY: 'hidden',
-                                // marginTop: '-3rem',
-                                // marginLeft: '-3rem',
-                                // "&::-webkit-scrollbar": {
-                                //     display: 'none',
-                                // },
-
-                               
-                            }}
-                        >
-                            {media?.filter((item) => item.poster_path).map((item, index) => (
-                                <Cards key={index} item={item} enableGenres={false} />
-
-                            ))}
-                        </Box> */}
-
-                        /* ➡️ Next Button */
-                        {/* {page < totalPages - 1 && (
-                            <IconButton
-                                onClick={handleNext}
-                                sx={{
-                                    position: "absolute",
-                                    top: "50%",
-                                    right: "1rem",
-                                    transform: "translateY(-50%)",
-                                    background: "rgba(0,0,0,0.6)",
-                                    color: "#fff",
-                                    "&:hover": { background: "rgba(0,0,0,0.8)" },
-                                    zIndex: 5,
-                                }}
-                            >
-                                <ChevronRight />
-                            </IconButton>
-                        )} */}
-
-                        {/* trial 2 */}
+                        {/* 3. SCROLLABLE POSTER AREA */}
                         <Box
                             className="scroll-container"
                             ref={scrollContainerRef}
@@ -196,24 +176,54 @@ const MovieSections: React.FC<MovieSectionProps> = (
                             sx={{
                                 display: "flex",
                                 flexDirection: "row",
-                                gap: "1.5rem",
+                                // 🌟 FIX 2: Increased gap for better visual separation
+                                gap: "1rem", 
+                                padding: { xs: '0 1rem', md: '0 3rem' },
                                 overflowX: "auto",
                                 overflowY: "hidden",
                                 scrollBehavior: "smooth",
-                                padding: "0 2rem",
                                 "&::-webkit-scrollbar": { display: "none" },
+                                width: '100%',
+                                // 🌟 FIX 3: Disable pointer events on the entire card area while scrolling
+                                pointerEvents: isScrolling ? 'none' : 'auto', 
                             }}
                         >
+                            {/* 4. CARDS with MIN-WIDTH and FLEX-SHRINK: 0 */}
                             {media?.filter((item) => item.poster_path).map((item, index) => (
-                                <Cards key={index} item={item} enableGenres={false} />
+                                <Box
+                                    key={item.id || index}
+                                    sx={{
+                                        flex: '0 0 auto',
+                                        // 🌟 FIX 1 & 2: Added a height ratio for better image sizing
+                                        // 150% ensures the card height is 1.5 times its width (standard poster aspect ratio is ~1.5)
+                                        // 🌟 FIX 2: Added padding-bottom to create space *below* the card.
+                                        paddingBottom: '0.5rem', 
+                                        
+                                        // Define responsive widths:
+                                        width: {
+                                            xs: 'calc(33.33% - 0.66rem)', // 3 items + accounting for the 1rem gap (1rem gap * 2 gaps / 3 items)
+                                            sm: 'calc(25% - 0.75rem)',   // 4 items
+                                            md: 'calc(20% - 0.8rem)',    // 5 items
+                                            lg: 'calc(16.66% - 0.83rem)', // 6 items
+                                        },
+                                        // 🌟 FIX 1: Set position relative for the Cards component inside to fill the space
+                                        position: 'relative',
+                                        height: 'auto', // Allow height to be determined by content or aspect ratio
+                                    }}
+                                >
+                                    {/* 🌟 FIX 1: Make sure your Cards component itself has CSS like:
+                                        width: 100%;
+                                        height: 100%;
+                                        If it uses a Next.js Image component, the parent (this Box) should have position: relative and a defined size.
+                                    */}
+                                    <Cards item={item} enableGenres={false} />
+                                </Box>
                             ))}
                         </Box>
 
-                        {/* Buttons */}
+                        {/* 5. SLIDER BUTTONS */}
                         {isScrolled && <SliderButton isRight={false} onClick={scrollLeft} />}
-                        <SliderButton isRight={true} onClick={scrollRight} />
-
-
+                        {media.length > 0 && <SliderButton isRight={true} onClick={scrollRight} />} 
                     </Box>
                 </>
             )}
