@@ -1,5 +1,3 @@
-
-
 // gemini version.
 import { Box, Typography, IconButton } from "@mui/material";
 import React from "react";
@@ -46,28 +44,21 @@ const MovieSections: React.FC<MovieSectionProps> = (
     const [media, setMedia] = React.useState<any[]>([]);
     const [error, setError] = React.useState<string | null>(null);
     const [isScrolled, setIsScrolled] = React.useState<boolean>(false);
-    // 🌟 FIX 3: New state to track scrolling for pointer-events fix
     const [isScrolling, setIsScrolling] = React.useState<boolean>(false);
 
-    // ... (fetchMovies logic remains the same) ...
+    // ... (fetchMovies logic remains the same, keeping your original code) ...
     const fetchMovies = async () => {
         if (setLoading) {
             setLoading(true);
         }
         // NOTE: Placeholder for actual API call
+        // Assuming getMovie is defined and works
         const res = await getMovie(`${endpoint}`) 
-        // For demonstration, simulating a successful response:
-        // const mockData = {
-        //     data: {
-        //         results: Array.from({ length: 20 }, (_, i) => ({
-        //             id: i,
-        //             title: `Movie ${i + 1}`,
-        //             poster_path: `/path/to/poster${i}.jpg`,
-        //         })),
-        //     },
-        // };
-        // const res = mockData as any; // Cast mock data for type compatibility
-
+        
+        // Placeholder data to prevent crash if getMovie isn't defined
+        // const res = { data: { results: [{ id: 1, poster_path: 'a' }, { id: 2, poster_path: 'b' }, { id: 3, poster_path: 'c' }, { id: 4, poster_path: 'd' }, { id: 5, poster_path: 'e' }, { id: 6, poster_path: 'f' }, { id: 7, poster_path: 'g' }, { id: 8, poster_path: 'h' },] } };
+        // ------------------
+       
         if (res.error) {
             setError(res.error.message);
         }
@@ -90,33 +81,28 @@ const MovieSections: React.FC<MovieSectionProps> = (
         const scrollLeft = (event.currentTarget as HTMLElement).scrollLeft;
         setIsScrolled(scrollLeft > 50);
         
-        // 🌟 FIX 3: Re-enable pointer events after scrolling stops (debounced)
         if (isScrolling) {
-             // Basic debounce to check if scrolling has stopped
             if (scrollTimeout.current) clearTimeout(scrollTimeout.current);
 
             scrollTimeout.current = setTimeout(() => {
                 setIsScrolling(false);
-            }, 100); // 100ms delay after scroll to confirm stop
+            }, 100);
         }
     }
     const scrollTimeout = React.useRef<NodeJS.Timeout | null>(null);
 
 
-    // Utility function to handle scroll with pointer-events block
     const performScroll = (scrollAmount: number) => {
         if (scrollContainerRef.current) {
-            // 🌟 FIX 3: Disable pointer events before scrolling starts
             setIsScrolling(true);
             
             scrollContainerRef.current.scrollBy({ left: scrollAmount, behavior: "smooth" });
             
-            // Set a timeout to re-enable pointer events after the scroll is expected to finish
-            const scrollDuration = 500; // Assuming 'smooth' scroll takes about 500ms
+            const scrollDuration = 500;
             if (scrollTimeout.current) clearTimeout(scrollTimeout.current);
             scrollTimeout.current = setTimeout(() => {
                 setIsScrolling(false);
-            }, scrollDuration + 50); // Little extra time to ensure re-enable
+            }, scrollDuration + 50);
         }
     };
 
@@ -176,15 +162,15 @@ const MovieSections: React.FC<MovieSectionProps> = (
                             sx={{
                                 display: "flex",
                                 flexDirection: "row",
-                                // 🌟 FIX 2: Increased gap for better visual separation
-                                gap: "1rem", 
+                                // FIX: Use a slightly larger gap to ensure space, and confirm the width calculation works with it.
+                                // gap: "1.5rem", 
+                                gap: "0.75rem",
                                 padding: { xs: '0 1rem', md: '0 3rem' },
                                 overflowX: "auto",
                                 overflowY: "hidden",
                                 scrollBehavior: "smooth",
                                 "&::-webkit-scrollbar": { display: "none" },
                                 width: '100%',
-                                // 🌟 FIX 3: Disable pointer events on the entire card area while scrolling
                                 pointerEvents: isScrolling ? 'none' : 'auto', 
                             }}
                         >
@@ -193,29 +179,37 @@ const MovieSections: React.FC<MovieSectionProps> = (
                                 <Box
                                     key={item.id || index}
                                     sx={{
-                                        flex: '0 0 auto',
-                                        // 🌟 FIX 1 & 2: Added a height ratio for better image sizing
-                                        // 150% ensures the card height is 1.5 times its width (standard poster aspect ratio is ~1.5)
-                                        // 🌟 FIX 2: Added padding-bottom to create space *below* the card.
+                                        // **FIX 1: Use flex-shrink: 0 and flex-basis: auto to ensure the width property is respected.**
+                                        flex: '0 0 auto', 
+                                        
+                                        // **FIX 2: Corrected width calculations to strictly divide the space for the new 1.5rem gap**
+                                        // N items, G gap: (100% - (N-1) * G) / N
+                                        width: {
+                                            // N=3, G=1.5rem: (100% - 3rem) / 3 
+                                            xs: 'calc((100% - 3rem) / 3)', 
+                                            // N=4, G=1.5rem: (100% - 4.5rem) / 4 
+                                            sm: 'calc((100% - 4.5rem) / 4)',   
+                                            // N=5, G=1.5rem: (100% - 6rem) / 5 
+                                            md: 'calc((100% - 6rem) / 5)',    
+                                            // N=6, G=1.5rem: (100% - 7.5rem) / 6 
+                                            lg: 'calc((100% - 7.5rem) / 6)', 
+                                        },
+                                        
+                                        // **FIX 3: Explicitly define height relative to the calculated width to prevent collapse/overlap.**
+                                        // Standard poster aspect ratio is ~1:1.5 (width:height). Height = Width * 1.5.
+                                        // We use the 'auto' height on the wrapping Box, but will rely on the content's size if it's an image.
+                                        // For a safer solution without relying on the internal Cards component:
+                                        aspectRatio: '1 / 1.5',
+                                        position: 'relative', // Ensure Cards can be positioned absolutely inside if needed
+                                        
+                                        // Original padding-bottom for vertical spacing below the row:
                                         paddingBottom: '0.5rem', 
                                         
-                                        // Define responsive widths:
-                                        width: {
-                                            xs: 'calc(33.33% - 0.66rem)', // 3 items + accounting for the 1rem gap (1rem gap * 2 gaps / 3 items)
-                                            sm: 'calc(25% - 0.75rem)',   // 4 items
-                                            md: 'calc(20% - 0.8rem)',    // 5 items
-                                            lg: 'calc(16.66% - 0.83rem)', // 6 items
-                                        },
-                                        // 🌟 FIX 1: Set position relative for the Cards component inside to fill the space
-                                        position: 'relative',
-                                        height: 'auto', // Allow height to be determined by content or aspect ratio
+                                        // Optional: Add a subtle margin-right to test spacing if gap isn't working perfectly
+                                        // marginRight: { xs: '1.5rem' }, // Only if gap fails
                                     }}
                                 >
-                                    {/* 🌟 FIX 1: Make sure your Cards component itself has CSS like:
-                                        width: 100%;
-                                        height: 100%;
-                                        If it uses a Next.js Image component, the parent (this Box) should have position: relative and a defined size.
-                                    */}
+                                    {/* Make sure your Cards component fills this container! */}
                                     <Cards item={item} enableGenres={false} />
                                 </Box>
                             ))}
