@@ -1,8 +1,10 @@
+![Alt text](./image.png)
+
+
 🎬 Netflix Clone (Next.js 15 + TypeScript + Tailwind)
 
 A fully responsive Netflix-style web app built with Next.js 15, TypeScript, and Tailwind CSS, using The Movie Database (TMDB) API to fetch movies, TV shows, and trailers.
 
-![Alt text](./image.png)
 
 
 🚀 Features
@@ -21,6 +23,8 @@ A fully responsive Netflix-style web app built with Next.js 15, TypeScript, and 
 
 🧠 TypeScript for type safety
 
+
+
 🧰 Tech Stack
 Category	Tools
 Framework	Next.js 15
@@ -31,15 +35,24 @@ Styling	Tailwind CSS
 
 API	TMDB (The Movie Database)
 
-Deployment	Vercel
- (recommended)
+
+
+
+
 ⚙️ Getting Started
+
+
+
 1️⃣ Clone the repository
 git clone https://github.com/rufron/netflix-clone.git
 cd netflix
 
+
+
 2️⃣ Install dependencies
 npm install
+
+
 
 3️⃣ Set up environment variables
 
@@ -52,7 +65,10 @@ NEXT_PUBLIC_BASE_URL=https://api.themoviedb.org/3
 🔑 You can get your API key from TMDB’s Developer Portal
 .
 
+
+
 4️⃣ Run the development server
+
 npm run dev
 
 
